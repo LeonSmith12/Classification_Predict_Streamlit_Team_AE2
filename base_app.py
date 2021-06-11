@@ -29,7 +29,10 @@ import joblib,os
 import pandas as pd
 
 # Vectorizer
-news_vectorizer = open("resources/tfidfvect.pkl","rb")
+# news_vectorizer = open("resources/tfidfvect.pkl","rb")
+# tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
+
+news_vectorizer = open("resources/countvec_randfr_1.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
 
 # Load your raw data
@@ -70,13 +73,33 @@ def main():
 			vect_text = tweet_cv.transform([tweet_text]).toarray()
 			# Load your .pkl file with the model of your choice + make predictions
 			# Try loading in multiple models to give the user a choice
-			predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
+			# predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
+			# prediction = predictor.predict(vect_text)
+
+			predictor = joblib.load(open(os.path.join("resources/model_randfr_1.pkl"),"rb"))
 			prediction = predictor.predict(vect_text)
 
 			# When model has successfully run, will print prediction
 			# You can use a dictionary or similar structure to make this output
 			# more human interpretable.
 			st.success("Text Categorized as: {}".format(prediction))
+	
+	# Creating sidebar with selection box -
+	# you can create multiple pages this way
+	members = ["Leon", "Saveshnee", "Kiren", "Kwanda", "Thato", "Rinkie"]
+	choose = st.sidebar.selectbox("Choose Team Member", members)
+	
+	# Building out the "Information" page
+	if choose == "Leon":
+		st.info("Quick Intro")
+		# You can read a markdown file from supporting resources folder
+		st.markdown(
+			"To tell you more about myself: I was born in Mthatha, my parents were teachers there and then we moved to the Western Province and we live close to the ocean.  \n"
+			"I attended the high school and went on to Stellenbosch University where I studied Mechanical Engineering. During my Varsity years.  \n"
+			"I was in Eendrag Mens Residence and played too much rugby and enjoyed going out with friends to the pub Die Akker  \n"
+			"I worked for a few years and then joined the Explore DS Academy. Which is really fun and I am learning a lot.  \n"
+			"I enjoy surfing, running, biking and golfing. That’s my basic intro."
+		)
 
 # Required to let Streamlit instantiate our web app.  
 if __name__ == '__main__':
