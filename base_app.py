@@ -27,16 +27,39 @@ import joblib,os
 
 # Data dependencies
 import pandas as pd
+import numpy as np # required for processing functions
 
 # Vectorizer
 # news_vectorizer = open("resources/tfidfvect.pkl","rb")
 # tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
 
+# Vectorizer modified
 news_vectorizer = open("resources/countvec_randfr_1.pkl","rb")
 tweet_cv = joblib.load(news_vectorizer) # loading your vectorizer from the pkl file
 
 # Load your raw data
 raw = pd.read_csv("resources/train.csv")
+
+# Processing cleaning functions
+# Convert all string entries to lower case.
+def to_lower(df):
+    """
+    Changes all string values to lower case in dataframe column.
+    
+    
+    Parameters
+    ----------
+    df : pandas DataFrame
+        The DataFrame to clean
+
+    Returns
+    -------
+    df : pandas DataFrame
+            The cleaned DataFrame
+    """
+    
+    df["message"] = df["message"].str.lower()
+    return df
 
 # The main function where we will build the actual app
 def main():
@@ -69,14 +92,22 @@ def main():
 		tweet_text = st.text_area("Enter Text","Type Here")
 
 		if st.button("Classify"):
-			# Transforming user input with vectorizer
-			vect_text = tweet_cv.transform([tweet_text]).toarray()
+			# Clean the input with processing functions
+			tt_df = pd.DataFrame(np.array([tweet_text]), columns=["message"])
+			st.write(tt_df[['message']])
+			clean_tt_df = to_lower(tt_df)
+			st.write(clean_tt_df[['message']])
+			vect_text = tweet_cv.transform(clean_tt_df["message"]).toarray()
+
+			# Transforming user input with vectorizer (original)
+			# vect_text = tweet_cv.transform([tweet_text]).toarray()
 			# Load your .pkl file with the model of your choice + make predictions
 			# Try loading in multiple models to give the user a choice
 			# predictor = joblib.load(open(os.path.join("resources/Logistic_regression.pkl"),"rb"))
 			# prediction = predictor.predict(vect_text)
 
-			predictor = joblib.load(open(os.path.join("resources/model_randfr_1.pkl"),"rb"))
+			# Model modified
+			predictor = joblib.load(open(os.path.join("resources/model_randfr_1.pkl"),"rb")) # load trained random_forest model
 			prediction = predictor.predict(vect_text)
 
 			# When model has successfully run, will print prediction
